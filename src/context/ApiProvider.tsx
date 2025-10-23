@@ -1,3 +1,5 @@
+"use client";
+
 import React, {createContext, useContext} from 'react'
 import type {SanctumApi} from 'laravel-connector'
 import type {ApiProviderProps} from '../types'
