@@ -1,7 +1,7 @@
 "use client";
 
-import React, {createContext, useContext} from 'react'
-import type {SanctumApi} from 'laravel-connector'
+import React, {createContext, useContext, useMemo} from 'react'
+import {createSanctumApi, type SanctumApi} from 'laravel-connector'
 import type {ApiProviderProps} from '../types'
 
 const ApiContext = createContext<SanctumApi | null>(null)
@@ -10,8 +10,14 @@ const ApiContext = createContext<SanctumApi | null>(null)
  * Provider component for Laravel API context
  * Wraps your app to provide an API instance to all hooks
  */
-export function ApiProvider({children, api}: ApiProviderProps) {
-  return <ApiContext.Provider value={api}>{children}</ApiContext.Provider>
+export function ApiProvider({children, api, config}: ApiProviderProps) {
+  const apiInstance = useMemo(() => {
+    if (api) return api;
+    if (config) return createSanctumApi(config);
+    throw new Error('ApiProvider requires either "api" or "config" prop');
+  }, [api, config]);
+
+  return <ApiContext.Provider value={apiInstance}>{children}</ApiContext.Provider>
 }
 
 /**

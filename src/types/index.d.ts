@@ -37,7 +37,9 @@ export interface UseMutationResult<T> {
   reset: () => void
 }
 
-export interface ApiProviderProps {
-  children: React.ReactNode
-  api: SanctumApi
-}
+export type ApiProviderProps = {
+  children: React.ReactNode;
+} & (
+  | { api: SanctumApi; config?: never }
+  | { config: Parameters<typeof import('laravel-connector').createSanctumApi>[0]; api?: never }
+  );
