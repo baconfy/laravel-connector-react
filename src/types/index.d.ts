@@ -43,3 +43,5 @@ export type ApiProviderProps = {
   | { api: SanctumApi; config?: never }
   | { config: Parameters<typeof import('laravel-connector').createSanctumApi>[0]; api?: never }
   );
+
+export type AuthProviderProps = { children: React.ReactNode; };

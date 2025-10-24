@@ -1,5 +1,5 @@
 import {useCallback, useEffect, useRef, useState} from 'react'
-import {useApiContext} from '../context/ApiProvider'
+import {useApiContext} from '../context/api-provider'
 import type {UseApiOptions, UseApiResult} from '../types'
 
 /**
@@ -79,7 +79,7 @@ export function useApi<T = any>(
     lastFetchRef.current = fetchKey
     fetchData()
 
-    // Setup refetch interval
+    // Set up a refetch interval
     if (refetchInterval && refetchInterval > 0) {
       intervalRef.current = setInterval(fetchData, refetchInterval)
     }

@@ -1,2 +1,2 @@
-export { useApi } from './useApi'
-export { useMutation } from './useMutation'
+export { useApi } from './use-api'
+export { useMutation } from './use-mutation'
