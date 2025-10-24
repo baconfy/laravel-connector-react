@@ -1,5 +1,9 @@
 ### 1. Setup the Provider
 
+```
+npm i laravel-connector-react
+```
+
 Wrap your app with `ApiProvider` using `SanctumApi`:
 ```tsx
 // app/layout.tsx (Next.js) or main.tsx (Vite)
