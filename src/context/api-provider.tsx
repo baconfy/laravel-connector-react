@@ -1,6 +1,6 @@
 "use client";
 
-import React, {createContext, useContext, useMemo} from 'react'
+import React, {createContext, useContext, useEffect, useMemo} from 'react'
 import {createSanctumApi, type SanctumApi} from 'laravel-connector'
 import type {ApiProviderProps} from '../types'
 

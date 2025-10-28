@@ -5,9 +5,7 @@ import {createSanctumApi} from 'laravel-connector'
 import React from 'react'
 
 describe('ApiProvider', () => {
-  const mockApi = createSanctumApi({
-    baseUrl: 'https://api.example.com'
-  })
+  const mockApi = createSanctumApi({url: 'https://api.example.com'})
 
   describe('with api instance prop (legacy)', () => {
     it('should provide API instance to children', () => {
@@ -44,7 +42,7 @@ describe('ApiProvider', () => {
       }
 
       render(
-        <ApiProvider config={{baseUrl: 'https://config.example.com'}}>
+        <ApiProvider config={{url: 'https://config.example.com'}}>
           <TestComponent/>
         </ApiProvider>
       )
@@ -54,7 +52,7 @@ describe('ApiProvider', () => {
 
     it('should render children correctly with config', () => {
       render(
-        <ApiProvider config={{baseUrl: 'https://api.example.com'}}>
+        <ApiProvider config={{url: 'https://api.example.com'}}>
           <div>Child Component</div>
         </ApiProvider>
       )
@@ -71,7 +69,7 @@ describe('ApiProvider', () => {
         return <div>Test</div>
       }
 
-      const config = { baseUrl: 'https://api.example.com' }
+      const config = {url: 'https://api.example.com'}
 
       const {rerender} = render(
         <ApiProvider config={config}>

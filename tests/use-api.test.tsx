@@ -9,7 +9,7 @@ describe('useApi', () => {
   let mockApi: ReturnType<typeof createSanctumApi>
 
   beforeEach(() => {
-    mockApi = createSanctumApi({baseUrl: 'https://api.example.com'})
+    mockApi = createSanctumApi({url: 'https://api.example.com'})
     global.fetch = vi.fn()
   })
 
