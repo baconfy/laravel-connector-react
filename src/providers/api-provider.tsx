@@ -1,4 +1,4 @@
-'use client'
+"use client"
 
 import {useMemo, useCallback, ReactNode} from 'react'
 import {createApi, createSanctumApi} from 'laravel-connector'
