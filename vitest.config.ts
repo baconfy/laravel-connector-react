@@ -10,10 +10,11 @@ export default defineConfig({
       reporter: ['text', 'json', 'html'],
       exclude: [
         'node_modules/',
-        'tests/',
-        '**/*.d.ts',
-        '**/*.config.*',
-        '**/dist/'
+        'dist/',
+        '**/*.test.ts',
+        '**/*.test.tsx',
+        '**/types/**',
+        'tests/setup.ts'
       ]
     }
   }
