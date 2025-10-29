@@ -1,6 +1,6 @@
 {
   "name": "laravel-connector-react",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "React hooks and context providers for Laravel Connector with Sanctum support",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -40,8 +40,7 @@
   "author": "",
   "license": "MIT",
   "peerDependencies": {
-    "laravel-connector": "^2.0.0",
-    "react": ">=19.0.0"
+    "react": ">=18.0.0"
   },
   "dependencies": {
     "laravel-connector": "^2.0.0"
@@ -51,6 +50,7 @@
     "@types/node": "^20.10.5",
     "@types/react": "^19.0.1",
     "@typescript-eslint/eslint-plugin": "^6.15.0",
+    "@testing-library/jest-dom": "^6.1.5",
     "@typescript-eslint/parser": "^6.15.0",
     "@vitest/coverage-v8": "^4.0.4",
     "@vitest/ui": "^4.0.4",
