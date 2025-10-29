@@ -1,0 +1,69 @@
+{
+  "name": "laravel-connector-react",
+  "version": "1.0.0",
+  "description": "React hooks and context providers for Laravel Connector with Sanctum support",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest --coverage",
+    "lint": "eslint src --ext .ts,.tsx",
+    "type-check": "tsc --noEmit"
+  },
+  "keywords": [
+    "laravel",
+    "sanctum",
+    "react",
+    "hooks",
+    "api",
+    "http",
+    "client",
+    "typescript",
+    "authentication"
+  ],
+  "author": "",
+  "license": "MIT",
+  "peerDependencies": {
+    "laravel-connector": "^2.0.0",
+    "react": ">=19.0.0"
+  },
+  "dependencies": {
+    "laravel-connector": "^2.0.0"
+  },
+  "devDependencies": {
+    "@testing-library/react": "^16.0.1",
+    "@types/node": "^20.10.5",
+    "@types/react": "^19.0.1",
+    "@typescript-eslint/eslint-plugin": "^6.15.0",
+    "@typescript-eslint/parser": "^6.15.0",
+    "@vitest/coverage-v8": "^4.0.4",
+    "@vitest/ui": "^4.0.4",
+    "eslint": "^8.56.0",
+    "eslint-plugin-react": "^7.33.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "happy-dom": "^20.0.10",
+    "react": "^19.0.0",
+    "tsup": "^8.0.1",
+    "typescript": "^5.3.3",
+    "vitest": "^4.0.4"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
