@@ -1,6 +1,6 @@
 {
   "name": "laravel-connector-react",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "React hooks and context providers for Laravel Connector with Sanctum support",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
