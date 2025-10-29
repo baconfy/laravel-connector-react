@@ -8,7 +8,9 @@ export default defineConfig({
   sourcemap: true,
   clean: true,
   treeshake: true,
-  minify: false,
+  minify: true,
   external: ['react', 'laravel-connector'],
-  outDir: 'dist'
+  banner: {
+    js: '"use client";',
+  },
 })
