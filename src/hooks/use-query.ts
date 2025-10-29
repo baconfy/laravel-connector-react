@@ -1,3 +1,5 @@
+'use client'
+
 import {useCallback, useContext, useEffect, useRef, useState} from 'react'
 import {ApiContext} from '../contexts/api-context'
 import {QueryOptions, QueryState} from '../types'

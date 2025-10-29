@@ -1,3 +1,5 @@
+'use client'
+
 import {useMemo, useCallback, ReactNode} from 'react'
 import {createApi, createSanctumApi} from 'laravel-connector'
 import {ApiContext} from '../contexts/api-context'

@@ -1,3 +1,5 @@
+'use client'
+
 import {useContext} from 'react'
 import {ApiContext} from '../contexts/api-context'
 import {Api, SanctumApi} from 'laravel-connector'
