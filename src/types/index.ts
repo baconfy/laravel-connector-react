@@ -68,6 +68,7 @@ export interface QueryState<T = any> {
   isFetching: boolean
   refetch: () => Promise<void>
   invalidate: () => void
+  reset: () => void
 }
 
 /**

@@ -1,37 +1,17 @@
 "use client"
 
 import {useCallback, useContext, useEffect, useRef, useState} from 'react'
+import {createCacheKey, getCachedData, setCachedData} from '../lib/cache'
 import {ApiContext} from '../contexts/api-context'
 import {QueryOptions, QueryState} from '../types'
-import {createCacheKey, getCachedData, setCachedData} from '../lib/cache'
 
 /**
  * Hook for fetching data with caching and automatic refetching
+ * Includes security improvements: reset function, abort controller, error validation
  *
  * @param endpoint - The API endpoint to fetch from
  * @param options - Query options for configuration
- * @returns Query state with data, loading, error states and refetch function
- *
- * @example
- * ```tsx
- * function UserList() {
- *   const { data, isLoading, isError, error, refetch } = useQuery('/users', {
- *     refetchOnMount: true,
- *     staleTime: 5000,
- *     onSuccess: (users) => console.log('Loaded:', users)
- *   })
- *
- *   if (isLoading) return <div>Loading...</div>
- *   if (isError) return <div>Error: {error}</div>
- *
- *   return (
- *     <div>
- *       {data.map(user => <div key={user.id}>{user.name}</div>)}
- *       <button onClick={refetch}>Refresh</button>
- *     </div>
- *   )
- * }
- * ```
+ * @returns Query state with data, loading, error states and refetch/reset functions
  */
 export function useQuery<T = any>(endpoint: string, options: QueryOptions<T> = {}): QueryState<T> {
   const context = useContext(ApiContext)
@@ -66,12 +46,34 @@ export function useQuery<T = any>(endpoint: string, options: QueryOptions<T> = {
   const mountedRef = useRef(true)
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
   const retryCountRef = useRef(0)
+  const abortControllerRef = useRef<AbortController | null>(null)
 
-  // Create cache key
+  // Create a cache key
   const cacheKey = createCacheKey(endpoint)
 
-  // Fetch function
-  const fetchData = useCallback(async (isRetry = false) => {
+  /**
+   * Reset function - Clears all data from memory (security)
+   * Used on logout or when you need to clear sensitive data
+   *
+   * @returns void
+   */
+  const reset = useCallback(() => {
+    setData(undefined)
+    setError(null)
+    setIsLoading(false)
+    setIsFetching(false)
+    setIsError(false)
+    setIsSuccess(false)
+    retryCountRef.current = 0
+  }, [])
+
+  /**
+   * Fetch function with support for abort controller and error validation
+   *
+   * @param isRetry - Whether this is a retry attempt
+   * @returns Promise<void>
+   */
+  const fetchData = useCallback(async (isRetry = false): Promise<void> => {
     if (!enabled) return
 
     if (!isRetry) {
@@ -82,33 +84,58 @@ export function useQuery<T = any>(endpoint: string, options: QueryOptions<T> = {
     }
 
     try {
-      // Check cache first
       const cached = getCachedData<T>(cache, cacheKey)
-      if (cached && !isRetry) {
-        setData(select ? select(cached) : cached)
+
+      if (staleTime > 0 && cached && !isRetry) {
+        const finalData = select ? select(cached) : cached
+
+        setData(finalData)
         setIsSuccess(true)
         setIsError(false)
         setError(null)
         setIsFetching(false)
         setIsLoading(false)
-        onSuccess?.(select ? select(cached) : cached)
+        onSuccess?.(finalData)
+
         return
       }
 
-      const response = await api.get(endpoint)
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort()
+      }
 
+      // Create a new abort controller for this request
+      abortControllerRef.current = new AbortController()
+      const signal = abortControllerRef.current.signal
+
+      const response = await api.get(endpoint, {signal})
+
+      // Check if the component is still mounted and the request wasn't aborted
       if (!mountedRef.current) return
+      if (signal.aborted) return
 
       if (response.success && response.data) {
         const finalData = select ? select(response.data) : response.data
+
         setData(finalData as T)
         setIsSuccess(true)
         setIsError(false)
         setError(null)
         retryCountRef.current = 0
 
-        // Cache the data
         setCachedData(cache, cacheKey, response.data, staleTime)
+
+        onSuccess?.(finalData as T)
+      } else if (response.success && !response.errors) {
+        const finalData = select ? select(undefined) : undefined
+
+        setData(finalData as T)
+        setIsSuccess(true)
+        setIsError(false)
+        setError(null)
+        retryCountRef.current = 0
+
+        setCachedData(cache, cacheKey, undefined, staleTime)
 
         onSuccess?.(finalData as T)
       } else {
@@ -116,12 +143,16 @@ export function useQuery<T = any>(endpoint: string, options: QueryOptions<T> = {
       }
     } catch (err) {
       if (!mountedRef.current) return
+      if (abortControllerRef.current?.signal.aborted) return
 
       // Retry logic
       if (retryCountRef.current < retry) {
         retryCountRef.current++
+
         setTimeout(() => {
-          void fetchData(true)
+          if (mountedRef.current) {
+            void fetchData(true)
+          }
         }, retryDelay * retryCountRef.current)
         return
       }
@@ -138,16 +169,25 @@ export function useQuery<T = any>(endpoint: string, options: QueryOptions<T> = {
     }
   }, [endpoint, enabled, api, cache, cacheKey, staleTime, select, retry, retryDelay, onSuccess, onError, data])
 
-  // Refetch function
+  /**
+   * Refetch function - Fetches fresh data and resets retry count
+   *
+   * @returns Promise<void>
+   */
   const refetch = useCallback(async () => {
     retryCountRef.current = 0
     await fetchData()
   }, [fetchData])
 
-  // Invalidate function
+  /**
+   * Invalidate function - Clears cache and refetches data
+   *
+   * @returns void
+   */
   const invalidate = useCallback(() => {
     contextInvalidate(cacheKey)
     retryCountRef.current = 0
+    setData(undefined)
     void fetchData()
   }, [cacheKey, contextInvalidate, fetchData])
 
@@ -155,6 +195,12 @@ export function useQuery<T = any>(endpoint: string, options: QueryOptions<T> = {
   useEffect(() => {
     if (refetchOnMount) {
       void fetchData()
+    }
+
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort()
+      }
     }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -194,15 +240,19 @@ export function useQuery<T = any>(endpoint: string, options: QueryOptions<T> = {
     }
   }, [refetchOnWindowFocus, enabled, fetchData])
 
-  // Cleanup
+  // Cleanup on unmounting
   useEffect(() => {
     return () => {
       mountedRef.current = false
       if (intervalRef.current) {
         clearInterval(intervalRef.current)
       }
+
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort()
+      }
     }
   }, [])
 
-  return {data, error, isLoading, isError, isSuccess, isFetching, refetch, invalidate}
+  return {data, error, isLoading, isError, isSuccess, isFetching, refetch, invalidate, reset}
 }

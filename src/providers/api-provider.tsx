@@ -12,13 +12,6 @@ export interface ApiProviderProps extends ApiProviderConfig {
 
 /**
  * ApiProvider component that provides an API instance to the entire app
- *
- * @example
- * ```tsx
- * <ApiProvider url="https://api.example.com" useSanctum={true}>
- *   <App />
- * </ApiProvider>
- * ```
  */
 export function ApiProvider({children, url, useSanctum = false, headers = {}, timeout, retries, retryDelay, withCredentials, useCsrfToken, csrfCookiePath}: ApiProviderProps) {
   const api = useMemo(() => {
@@ -27,7 +20,7 @@ export function ApiProvider({children, url, useSanctum = false, headers = {}, ti
     return useSanctum
       ? createSanctumApi({...config, withCredentials, useCsrfToken, csrfCookiePath})
       : createApi(config)
-  }, [url, useSanctum, JSON.stringify(headers), timeout, retries, retryDelay, withCredentials, useCsrfToken, csrfCookiePath])
+  }, [url, headers, timeout, retries, retryDelay, useSanctum, withCredentials, useCsrfToken, csrfCookiePath])
 
   // Create query cache
   const cache = useMemo<QueryCache>(() => createQueryCache(), [])

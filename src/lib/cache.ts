@@ -10,16 +10,14 @@ export function createQueryCache(): QueryCache {
 /**
  * Gets cached data if it's still fresh
  */
-export function getCachedData<T>(
-  cache: QueryCache,
-  key: string
-): T | undefined {
+export function getCachedData<T>(cache: QueryCache, key: string): T | undefined {
   const entry = cache.get(key)
 
   if (!entry) return undefined
 
   const now = Date.now()
-  const isStale = now - entry.timestamp > entry.staleTime
+
+  const isStale = now - entry.timestamp >= entry.staleTime
 
   if (isStale) {
     cache.delete(key)
@@ -32,17 +30,8 @@ export function getCachedData<T>(
 /**
  * Sets data in cache
  */
-export function setCachedData<T>(
-  cache: QueryCache,
-  key: string,
-  data: T,
-  staleTime: number
-): void {
-  const entry: CacheEntry<T> = {
-    data,
-    timestamp: Date.now(),
-    staleTime
-  }
+export function setCachedData<T>(cache: QueryCache, key: string, data: T, staleTime: number): void {
+  const entry: CacheEntry<T> = {data, timestamp: Date.now(), staleTime}
 
   cache.set(key, entry)
 }
@@ -50,10 +39,7 @@ export function setCachedData<T>(
 /**
  * Invalidates a specific cache entry
  */
-export function invalidateCacheEntry(
-  cache: QueryCache,
-  key: string
-): void {
+export function invalidateCacheEntry(cache: QueryCache, key: string): void {
   cache.delete(key)
 }
 
@@ -67,20 +53,15 @@ export function clearCache(cache: QueryCache): void {
 /**
  * Creates a cache key from endpoint and params
  */
-export function createCacheKey(
-  endpoint: string,
-  params?: Record<string, any>
-): string {
+export function createCacheKey(endpoint: string, params?: Record<string, any>): string {
   if (!params || Object.keys(params).length === 0) {
     return endpoint
   }
 
-  const sortedParams = Object.keys(params)
-    .sort()
-    .reduce((acc, key) => {
-      acc[key] = params[key]
-      return acc
-    }, {} as Record<string, any>)
+  const sortedParams = Object.keys(params).sort().reduce((acc, key) => {
+    acc[key] = params[key]
+    return acc
+  }, {} as Record<string, any>)
 
   return `${endpoint}?${JSON.stringify(sortedParams)}`
 }

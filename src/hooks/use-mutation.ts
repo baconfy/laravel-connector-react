@@ -11,28 +11,6 @@ import {HttpMethod, MutationOptions, MutationState, Response} from '../types'
  * @param method - The HTTP method to use (POST, PUT, PATCH, DELETE)
  * @param options - Mutation options for callbacks and retry
  * @returns Mutation state with mutate function and loading states
- *
- * @example
- * ```tsx
- * function CreateUser() {
- *   const { mutate, isLoading, isError, error } = useMutation('/users', 'POST', {
- *     onSuccess: (user) => console.log('Created:', user),
- *     onError: (err) => toast.error(err.message)
- *   })
- *
- *   const handleSubmit = (data) => {
- *     mutate(data)
- *   }
- *
- *   return (
- *     <form onSubmit={handleSubmit}>
- *       <button disabled={isLoading}>
- *         {isLoading ? 'Creating...' : 'Create User'}
- *       </button>
- *     </form>
- *   )
- * }
- * ```
  */
 export function useMutation<TData = any, TVariables = any>(endpoint: string, method: HttpMethod = 'POST', options: MutationOptions<TData, TVariables> = {}): MutationState<TData, TVariables> {
   const api = useApi()
@@ -40,10 +18,10 @@ export function useMutation<TData = any, TVariables = any>(endpoint: string, met
   const {onSuccess, onError, onSettled, retry = 0, retryDelay = 1000} = options
 
   const [data, setData] = useState<TData | undefined>(undefined)
-  const [error, setError] = useState<any>(null)
   const [isLoading, setIsLoading] = useState(false)
-  const [isError, setIsError] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
+  const [error, setError] = useState<any>(null)
+  const [isError, setIsError] = useState(false)
 
   const mountedRef = useRef(true)
   const retryCountRef = useRef(0)
@@ -83,10 +61,20 @@ export function useMutation<TData = any, TVariables = any>(endpoint: string, met
           setIsSuccess(true)
           setIsError(false)
           setError(null)
+
           retryCountRef.current = 0
 
           onSuccess?.(response.data, variables)
           onSettled?.(response.data, null, variables)
+        } else if (response.success && !response.errors) {
+          setIsSuccess(true)
+          setIsError(false)
+          setError(null)
+
+          retryCountRef.current = 0
+
+          onSuccess?.(undefined as any, variables)
+          onSettled?.(undefined, null, variables)
         } else {
           throw new Error(response.errors || 'Mutation failed')
         }
