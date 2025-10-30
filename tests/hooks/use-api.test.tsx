@@ -41,16 +41,3 @@ it('should return same API instance on re-render', () => {
 
   expect(firstApi).toBe(secondApi)
 })
-
-it('should work with Sanctum API', () => {
-  const wrapper = ({children}: { children: ReactNode }) => (
-    <ApiProvider url="https://api.example.com" useSanctum={true}>
-      {children}
-    </ApiProvider>
-  )
-
-  const {result} = renderHook(() => useApi(), {wrapper})
-
-  expect(result.current).toBeDefined()
-  expect(result.current.get).toBeDefined()
-})

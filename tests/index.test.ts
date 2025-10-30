@@ -39,6 +39,6 @@ describe('Package Exports', () => {
 
   it('should have correct number of exports', () => {
     const exportKeys = Object.keys(exports)
-    expect(exportKeys.length).toBe(12)
+    expect(exportKeys.length).toBe(13)
   })
 })

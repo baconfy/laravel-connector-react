@@ -8,23 +8,7 @@ import {Api, SanctumApi} from 'laravel-connector'
  * Hook to access the API instance from context
  *
  * @returns The API instance (Api or SanctumApi)
- * @throws Error if used outside of ApiProvider
- *
- * @example
- * ```tsx
- * function MyComponent() {
- *   const api = useApi()
- *
- *   const handleFetch = async () => {
- *     const response = await api.get('/users')
- *     if (response.success) {
- *       console.log(response.data)
- *     }
- *   }
- *
- *   return <button onClick={handleFetch}>Fetch Users</button>
- * }
- * ```
+ * @throws Error if used outside ApiProvider
  */
 export function useApi(): Api | SanctumApi {
   const context = useContext(ApiContext)

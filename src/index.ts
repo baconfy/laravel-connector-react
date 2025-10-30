@@ -12,6 +12,7 @@ export {ApiContext} from './contexts/api-context'
 // Hooks
 export {useApi} from './hooks/use-api'
 export {useQuery} from './hooks/use-query'
+export {useSanctum} from './hooks/use-sanctum'
 export {useMutation} from './hooks/use-mutation'
 
 // Types
