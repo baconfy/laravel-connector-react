@@ -1,6 +1,6 @@
 "use client"
 
-import {useMemo, useCallback, ReactNode} from 'react'
+import {useMemo, useCallback, ReactNode, useEffect} from 'react'
 import {createApi, createSanctumApi} from 'laravel-connector'
 import {ApiContext} from '../contexts/api-context'
 import {ApiProviderConfig, QueryCache} from '../types'
@@ -36,6 +36,16 @@ export function ApiProvider({children, url, useSanctum = false, headers = {}, ti
   }, [cache])
 
   const value = useMemo(() => ({api, cache, invalidateQuery, invalidateAll}), [api, cache, invalidateQuery, invalidateAll])
+
+  useEffect(() => {
+    const initializeSession = async () => {
+      if ('initialize' in api) {
+        await api.initialize()
+      }
+    }
+
+    void initializeSession()
+  }, [api])
 
   return (
     <ApiContext.Provider value={value}>
