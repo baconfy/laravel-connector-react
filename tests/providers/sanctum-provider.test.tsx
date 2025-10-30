@@ -1,15 +1,15 @@
 import {describe, it, expect} from 'vitest'
 import {render, screen} from '@testing-library/react'
-import {ApiProvider, ApiContext} from '../../src'
+import {SanctumProvider, ApiContext} from '../../src'
 import '@testing-library/jest-dom'
 import {useContext} from 'react'
 
-describe('ApiProvider', () => {
+describe('SanctumProvider', () => {
   it('should render children', () => {
     render(
-      <ApiProvider url="https://api.example.com">
+      <SanctumProvider url="https://api.example.com">
         <div>Test Child</div>
-      </ApiProvider>
+      </SanctumProvider>
     )
 
     expect(screen.getByText('Test Child')).toBeInTheDocument()
@@ -22,24 +22,24 @@ describe('ApiProvider', () => {
     }
 
     render(
-      <ApiProvider url="https://api.example.com">
+      <SanctumProvider url="https://api.example.com">
         <TestComponent/>
-      </ApiProvider>
+      </SanctumProvider>
     )
 
     expect(screen.getByText('Has Context')).toBeInTheDocument()
   })
 
-  it('should create generic API instance with correct config', () => {
+  it('should create Sanctum API instance with correct config', () => {
     function TestComponent() {
       const context = useContext(ApiContext)
       return <div>{context?.api ? 'Has API' : 'No API'}</div>
     }
 
     render(
-      <ApiProvider url="https://api.example.com" timeout={5000}>
+      <SanctumProvider url="https://api.example.com" timeout={5000}>
         <TestComponent/>
-      </ApiProvider>
+      </SanctumProvider>
     )
 
     expect(screen.getByText('Has API')).toBeInTheDocument()
@@ -52,9 +52,9 @@ describe('ApiProvider', () => {
     }
 
     render(
-      <ApiProvider url="https://api.example.com">
+      <SanctumProvider url="https://api.example.com">
         <TestComponent/>
-      </ApiProvider>
+      </SanctumProvider>
     )
 
     expect(screen.getByText('Has Cache')).toBeInTheDocument()
@@ -67,9 +67,9 @@ describe('ApiProvider', () => {
     }
 
     render(
-      <ApiProvider url="https://api.example.com">
+      <SanctumProvider url="https://api.example.com">
         <TestComponent/>
-      </ApiProvider>
+      </SanctumProvider>
     )
 
     expect(screen.getByText('Has Invalidate')).toBeInTheDocument()
@@ -82,26 +82,28 @@ describe('ApiProvider', () => {
     }
 
     render(
-      <ApiProvider url="https://api.example.com">
+      <SanctumProvider url="https://api.example.com">
         <TestComponent/>
-      </ApiProvider>
+      </SanctumProvider>
     )
 
     expect(screen.getByText('Has InvalidateAll')).toBeInTheDocument()
   })
 
-  it('should not include Sanctum-specific props', () => {
+  it('should always use Sanctum API (no useSanctum flag)', () => {
     function TestComponent() {
       const context = useContext(ApiContext)
-      return <div>{context?.api ? 'Generic API' : 'No API'}</div>
+      // Check that the API has the initialize method (characteristic of SanctumApi)
+      const isSanctumApi = context?.api && 'initialize' in context.api
+      return <div>{isSanctumApi ? 'Is Sanctum API' : 'Not Sanctum API'}</div>
     }
 
     render(
-      <ApiProvider url="https://api.example.com" headers={{'Custom': 'Header'}}>
+      <SanctumProvider url="https://api.example.com">
         <TestComponent/>
-      </ApiProvider>
+      </SanctumProvider>
     )
 
-    expect(screen.getByText('Generic API')).toBeInTheDocument()
+    expect(screen.getByText('Is Sanctum API')).toBeInTheDocument()
   })
 })

@@ -1,6 +1,10 @@
-// Providers
+// Api Provider
 export {ApiProvider} from './providers/api-provider'
 export type {ApiProviderProps} from './providers/api-provider'
+
+// Sanctum Providers
+export {SanctumProvider} from './providers/sanctum-provider'
+export type {SanctumProviderProps} from './providers/sanctum-provider'
 
 // Contexts
 export {ApiContext} from './contexts/api-context'

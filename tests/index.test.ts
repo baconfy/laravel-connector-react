@@ -7,6 +7,11 @@ describe('Package Exports', () => {
     expect(typeof exports.ApiProvider).toBe('function')
   })
 
+  it('should export SanctumProvider', () => {
+    expect(exports.SanctumProvider).toBeDefined()
+    expect(typeof exports.SanctumProvider).toBe('function')
+  })
+
   it('should export ApiContext', () => {
     expect(exports.ApiContext).toBeDefined()
     expect(exports.ApiContext.displayName).toBe('ApiContext')
@@ -34,7 +39,6 @@ describe('Package Exports', () => {
 
   it('should have correct number of exports', () => {
     const exportKeys = Object.keys(exports)
-    // ApiProvider, ApiContext, useApi, useQuery, useMutation + 6 cache functions = 11 exports
-    expect(exportKeys.length).toBe(11)
+    expect(exportKeys.length).toBe(12)
   })
 })
