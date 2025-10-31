@@ -1,6 +1,6 @@
 "use client"
 
-import {useMemo, useCallback, ReactNode, useEffect, useState} from 'react'
+import {useMemo, useCallback, ReactNode, useEffect} from 'react'
 import {createSanctumApi} from 'laravel-connector'
 import {ApiContext} from '../contexts/api-context'
 import {ApiProviderConfig, QueryCache} from '../types'
@@ -15,8 +15,6 @@ export interface SanctumProviderProps extends Omit<ApiProviderConfig, 'useSanctu
  * Automatically initializes the session and manages cache
  */
 export function SanctumProvider({children, url, headers = {}, timeout, retries, retryDelay, withCredentials, useCsrfToken, csrfCookiePath}: SanctumProviderProps) {
-  const [initialized, setInitialized] = useState(false);
-
   const api = useMemo(() => {
     const config = {url, headers, timeout, retries, retryDelay}
 
@@ -37,10 +35,10 @@ export function SanctumProvider({children, url, headers = {}, timeout, retries, 
 
   useEffect(() => {
     const initializeSession = async () => {
-      await api.initialize().then(() => setInitialized(true))
+      await api.initialize()
     }
 
-    if (!initialized) void initializeSession()
+    void initializeSession()
   })
 
   return (
