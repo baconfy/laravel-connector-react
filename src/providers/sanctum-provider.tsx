@@ -39,7 +39,7 @@ export function SanctumProvider({children, url, headers = {}, timeout, retries, 
     }
 
     void initializeSession()
-  }, [api])
+  })
 
   return (
     <ApiContext.Provider value={value}>
